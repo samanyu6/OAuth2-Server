@@ -3,6 +3,7 @@ package com.samanyu.security.oauth2.conf;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
@@ -24,17 +25,20 @@ public class AuthorServerConfig extends WebSecurityConfigurerAdapter implements 
         return super.authenticationManagerBean();
     }
 
-//    @Autowired
-//    public AuthorServerConfig(){
-//
-//    }
-
 //    Autowiring the above bean, without the bean definition the authenticationManager bean cannot be found(as we don't have direct access to it).
-//    Below Method is Field Injection. This should be avoided, and hence defining a constructor based injection to ensure immutability for authManagerBean.
+//    Below Method is a Field Injection. This should be avoided, and hence defining a constructor based injection to ensure immutability for authManagerBean.
 //    Can do a setter injection too, if mutability is the case for AuthManager.
 
+//    @Autowired
+//    AuthenticationManager authenticationManager;
+
+//    @Lazy annotation generates mini beans only at the time they're needed. This is used to avoid cyclic dependencies.
+    private final AuthenticationManager authenticationManager;
+
     @Autowired
-    AuthenticationManager authenticationManager;
+    public AuthorServerConfig(@Lazy AuthenticationManager authMgr){
+        this.authenticationManager = authMgr;
+    }
 
     PasswordEncoder encode = PasswordEncoderFactories.createDelegatingPasswordEncoder();
 
